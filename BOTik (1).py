@@ -1,16 +1,21 @@
 from aiogram import Bot, Dispatcher, types
-from aiogram.contrib.middlewares.logging import LoggingMiddleware
-from aiogram.utils import executor
-from aiogram.types import ReplyKeyboardRemove, ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.enums import ParseMode
+from aiogram.filters import Command
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.utils.keyboard import InlineKeyboardBuilder
+from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
+from aiohttp import web
 import sqlite3
+import atexit
 
 API_TOKEN = '7801123648:AAHX0_w3EF3_2Z4XlXjH5BFfjD0L4EBH2aA'
 
-bot = Bot(token=API_TOKEN)
-dp = Dispatcher(bot)
+# Инициализация бота и диспетчера
+bot = Bot(token=API_TOKEN,)
+dp = Dispatcher()
 
 # Подключение к базе данных
-conn = sqlite3.connect('bot_database.db')
+conn = sqlite3.connect('bot_database.db', check_same_thread=False)
 cursor = conn.cursor()
 
 # Создание таблицы пользователей
@@ -23,18 +28,17 @@ cursor.execute('''
 ''')
 conn.commit()
 
-keyboard = InlineKeyboardMarkup(row_width=1)
-button = InlineKeyboardButton(text="Список серверов", callback_data="button1")
-keyboard.add(button)
+# Создание клавиатуры
+builder = InlineKeyboardBuilder()
+builder.add(InlineKeyboardButton(text="Список серверов", callback_data="button1"))
 
-@dp.message_handler(commands=['start'])
+@dp.message(Command("start"))
 async def send_welcome(message: types.Message):
-    await bot.send_message(
-        message.chat.id,
+    await message.answer(
         """Привет! Я бот для удалённого управления сервером Minecraft!
         Через меня, ты можешь запускать и останавливать свой сервер в Minecraft, а также вводить команды в консоль команды и смотреть онлайн сервера!
         Что бы продолжить, выбери один из предложенных вариантов кнопок""",
-        reply_markup=keyboard
+        reply_markup=builder.as_markup()
     )
     
     user_id = message.from_user.id
@@ -46,29 +50,33 @@ async def send_welcome(message: types.Message):
     ''', (user_id, username))
     conn.commit()
 
-keyboard2 = InlineKeyboardMarkup(row_width=1)
-button2 = InlineKeyboardButton(text='Голодные игры', callback_data="btn1")
-keyboard2.add(button2)
+# Создание второй клавиатуры
+builder2 = InlineKeyboardBuilder()
+builder2.add(InlineKeyboardButton(text='Голодные игры', callback_data="btn1"))
 
-@dp.callback_query_handler(lambda c: c.data == 'button1')
+@dp.callback_query(lambda c: c.data == 'button1')
 async def process_callback_button(callback_query: types.CallbackQuery):
-    # Отвечаем на callback (обязательно)
-    await bot.answer_callback_query(callback_query.id)
+    await callback_query.answer()
     
-    # Изменяем сообщение
-    await bot.edit_message_text(
-        chat_id=callback_query.message.chat.id,
-        message_id=callback_query.message.message_id,
-        text="Выберите один из уже существующих серверов или создайте новый",
-        reply_markup=keyboard2
+    await callback_query.message.edit_text(
+        "Выберите один из уже существующих серверов или создайте новый",
+        reply_markup=builder2.as_markup()
     )
 
 # Закрытие соединения с базой при завершении работы
-import atexit
 @atexit.register
 def close_db():
     conn.close()
 
-if __name__ == '__main__':
-    executor.start_polling(dp, skip_updates=True)
+async def on_startup(bot: Bot):
+    # Логика, которая выполняется при запуске бота
+    pass
 
+async def on_shutdown(bot: Bot):
+    # Логика, которая выполняется при завершении работы бота
+    pass
+
+if __name__ == '__main__':
+    dp.startup.register(on_startup)
+    dp.shutdown.register(on_shutdown)
+    dp.run_polling(bot)
