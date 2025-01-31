@@ -5,7 +5,7 @@ from aiogram.types import ReplyKeyboardRemove, ReplyKeyboardMarkup, KeyboardButt
 import aiosqlite
 import asyncio
 
-API_TOKEN = '7801123648:AAHX0_w3EF3_2Z4XlXjH5BFfjD0L4EBH2aA'
+API_TOKEN = 'Your API'
 
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
