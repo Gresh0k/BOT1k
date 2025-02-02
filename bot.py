@@ -4,12 +4,12 @@ from aiogram.utils import executor
 from aiogram.types import ReplyKeyboardRemove, ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton
 import aiosqlite
 import asyncio
+import os
 
-API_TOKEN = 'Your API'
+API_TOKEN = ''
 
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
-
 
 
 async def NewTable():
@@ -76,8 +76,23 @@ async def process_callback_button(callback_query: types.CallbackQuery):
     )
 
 
+
+
+@dp.callback_query_handler(lambda c: c.data == 'btn1')
+async def startServer(callback_query: types.CallbackQuery):
+    # Отвечаем на callback (обязательно)
+    await bot.answer_callback_query(callback_query.id)
+    
+    # Изменяем сообщение
+    await bot.edit_message_text(
+        chat_id=callback_query.message.chat.id,
+        message_id=callback_query.message.message_id,
+        text="Сервер запускается...",
+        reply_markup=keyboard2
+    )
+    os.startfile("C:\Server\Start.bat")
+
 async def main():
     await dp.start_polling()
 if __name__ == '__main__':
     executor.start_polling(dp, skip_updates=True)
-
