@@ -5,11 +5,79 @@ from aiogram.types import ReplyKeyboardRemove, ReplyKeyboardMarkup, KeyboardButt
 import aiosqlite
 import asyncio
 import os
+from aiogram.types import Message
+
+
 
 API_TOKEN = ''
 
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
+
+server_name1 = "C:\BOT1\Server\Start.bat"
+
+DATABASE_PATH = "bot_database.db"  # Путь к твоей SQLite базе данных
+
+ADMINS = {992729712}
+
+
+@dp.message_handler(commands=["grant_access"])
+async def grant_access(message: Message):
+    if message.from_user.id not in ADMINS:
+        await message.reply("У вас нет прав на выполнение этой команды.")
+        return
+
+    args = message.text.split()
+    if len(args) != 3:
+        await message.reply("Использование: /grant_access user_id server_name")
+        return
+
+    user_id = int(args[1])
+    server_name = args[2]
+
+    await add_user_server(user_id, server_name)
+    await message.reply(f"Пользователю {user_id} назначен сервер {server_name}")
+
+
+async def remove_user_server(user_id: int, server_name: str):
+    """Удаляет доступ пользователя только к указанному серверу."""
+    async with aiosqlite.connect(DATABASE_PATH) as db:
+        await db.execute(
+            "DELETE FROM user_servers WHERE user_id = ? AND server_name = ?", 
+            (user_id, server_name)
+        )
+        await db.commit()
+
+
+@dp.message_handler(commands=["revoke_access"])
+async def revoke_access(message: Message):
+    if message.from_user.id not in ADMINS:
+        await message.reply("У вас нет прав на выполнение этой команды.")
+        return
+
+    args = message.text.split()
+    if len(args) != 3:
+        await message.reply("Использование: /revoke_access user_id server_name")
+        return
+
+    user_id = int(args[1])
+    server_name = args[2]
+
+    await remove_user_server(user_id, server_name)
+    await message.reply(f"Доступ к серверу {server_name} для пользователя {user_id} был удалён.")
+
+
+
+
+async def add_user_server(user_id: int, server_name: str):
+    """Добавляет (или обновляет) сервер для пользователя в базе данных."""
+    async with aiosqlite.connect(DATABASE_PATH) as db:
+        await db.execute(
+            "INSERT OR REPLACE INTO user_servers (user_id, server_name) VALUES (?, ?)",
+            (user_id, server_name),
+        )
+        await db.commit()
+
 
 
 async def NewTable():
@@ -17,11 +85,11 @@ async def NewTable():
     async with aiosqlite.connect('bot_database.db') as db:
         # Создание таблицы пользователей
         await db.execute('''
-            CREATE TABLE IF NOT EXISTS users (
-                id INTEGER PRIMARY KEY,
-                user_id INTEGER NOT NULL UNIQUE,
-                username TEXT
-            )
+            CREATE TABLE IF NOT EXISTS user_servers (
+                user_id INTEGER PRIMARY KEY,
+                server_name TEXT NOT NULL
+            );
+
         ''')
         # Подтверждение изменений
         await db.commit()
@@ -49,14 +117,15 @@ async def send_welcome(message: types.Message):
     user_id = message.from_user.id
     username = message.from_user.username
 
-    #Вызов базы данных
-    async with aiosqlite.connect('bot_database.db') as db:
-        # Сохранение данных пользователя в базу
-        await db.execute('''
-            INSERT OR IGNORE INTO users (user_id, username) VALUES (?, ?)
-        ''', (user_id, username))
-        # Подтверждение изменений
-        await db.commit()
+async def add_serv():
+    async def add_user_server(user_id: int, server_name: str):
+        async with aiosqlite.connect("bot_database.db") as db:
+            await db.execute(
+                "INSERT OR REPLACE INTO user_servers (user_id, server_name) VALUES (?, ?)",
+                (user_id, server_name1),
+            )
+            await db.commit()
+
 
 keyboard2 = InlineKeyboardMarkup(row_width=1)
 button2 = InlineKeyboardButton(text='Голодные игры', callback_data="btn1")
@@ -90,7 +159,7 @@ async def startServer(callback_query: types.CallbackQuery):
         text="Сервер запускается...",
         reply_markup=keyboard2
     )
-    os.startfile("C:\Server\Start.bat")
+    os.startfile(server_name1)
 
 async def main():
     await dp.start_polling()
