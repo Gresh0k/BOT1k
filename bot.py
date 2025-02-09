@@ -10,7 +10,7 @@ import os
 import subprocess
 from mcrcon import MCRcon
 
-API_TOKEN = '8097261595:AAGe7mtmry0mya_Fk79etPITKMTbpsWVRVc'
+API_TOKEN = 'Your_Telegram_API_Token'
 
 # Инициализация хранилища состояний
 storage = MemoryStorage()
