@@ -1,8 +1,8 @@
-# BOT1k - Telegram Minecraft Server Manager
+# MinecraftRemoute - Telegram Minecraft Server Manager
 
 ## @MinecraftRemoute_bot
 
-BOT1k предназначен для удалённого запуска серверов Minecraft через Telegram.
+MinecraftRemoute предназначен для удалённого запуска серверов Minecraft через Telegram.
 
 ## 🔧 Логика работы:
 - Один компьютер выступает в роли **хоста** сервера Minecraft со стартовым файлом `start.bat`.
