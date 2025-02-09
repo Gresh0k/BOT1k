@@ -10,7 +10,7 @@ import os
 import subprocess
 from mcrcon import MCRcon
 
-API_TOKEN = ''
+API_TOKEN = '8097261595:AAGe7mtmry0mya_Fk79etPITKMTbpsWVRVc'
 
 # Инициализация хранилища состояний
 storage = MemoryStorage()
@@ -21,11 +21,11 @@ dp = Dispatcher(bot, storage=storage)
 SERVER_BAT_PATH = "start.bat"
 SERVER_FOLDER = os.getcwd()
 
-mc = MCRcon("46.147.151.48", "1488", port=25575)
+mc = MCRcon("127.0.0.1", "1488", port=25575)
 
 
 async def NewTable():
-    # Создание таблицы пользователей с колонкой "level"
+    # Создание базы данных
     async with aiosqlite.connect('bot_database.db') as db:
         await db.execute('''
             CREATE TABLE IF NOT EXISTS users (
