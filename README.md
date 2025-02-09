@@ -1,6 +1,6 @@
 # BOT1k - Telegram Minecraft Server Manager
 
-## @ThalyaevBot
+## @MinecraftRemoute_bot
 
 BOT1k предназначен для удалённого запуска серверов Minecraft через Telegram.
 
