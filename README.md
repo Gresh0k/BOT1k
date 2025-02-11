@@ -55,19 +55,13 @@ pip install -r requireme
 
 ```
 @echo off
-
-
 :: Определяем путь к Python в виртуальном окружении
 set PYTHON_PATH="%CD%\.venv\Scripts\python.exe"
-
-:: Проверяем, существует ли интерпретатор Python
 if not exist %PYTHON_PATH% (
     echo Python не найден в %PYTHON_PATH%
     pause
     exit /b
 )
-
-:: Запуск бота
 %PYTHON_PATH% bot.py
 ```
 
