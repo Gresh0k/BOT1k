@@ -55,7 +55,6 @@ pip install -r requireme
 
 ```
 @echo off
-:: Определяем путь к Python в виртуальном окружении
 set PYTHON_PATH="%CD%\.venv\Scripts\python.exe"
 if not exist %PYTHON_PATH% (
     echo Python не найден в %PYTHON_PATH%
