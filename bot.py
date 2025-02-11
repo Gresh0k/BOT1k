@@ -21,7 +21,7 @@ dp = Dispatcher(bot, storage=storage)
 SERVER_BAT_PATH = "start.bat"
 SERVER_FOLDER = os.getcwd()
 
-mc = MCRcon("127.0.0.1", "1488", port=25575)
+mc = MCRcon("127.0.0.1", "Your_Password_RCON", port=25575)
 
 
 async def NewTable():
