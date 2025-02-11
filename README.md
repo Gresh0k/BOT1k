@@ -53,7 +53,7 @@ pip install -r requireme
 
 Запуск бота:
 
-'''
+```
 @echo off
 
 
@@ -69,7 +69,7 @@ if not exist %PYTHON_PATH% (
 
 :: Запуск бота
 %PYTHON_PATH% bot.py
-'''
+```
 
 ### 📌 Команды
 
