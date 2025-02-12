@@ -34,7 +34,8 @@ cd BOT1k
 Убедись, что у тебя установлен Python 3. Затем установи зависимости:
 
 ```bash
-pip install -r requireme
+pip install -r requirements.txt
+
 ```
 
 ### 3. Настройка бота
